@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.SignUpPage"
+             Title="SignUpPage"
+             Shell.NavBarIsVisible="False"
+             xmlns:dataForm="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <VerticalStackLayout Spacing="20" Padding="20">
+        <Border Grid.ColumnSpan="{OnIdiom Default=2, Desktop=1}" Stroke="Transparent" Background="{OnIdiom Phone=Transparent,Desktop=Transparent}" Grid.RowSpan="{OnIdiom Default=1, Desktop=2}">
+            <Image Source="logo.png" Grid.Row="0" Grid.Column="0" HorizontalOptions="Center" Aspect="AspectFit" 
+                   MaximumHeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='30'}"/>
+        </Border>
+
+        <dataForm:SfDataForm x:Name="signUpForm" 
+                             DataObject="{Binding SignUpFormModel}"
+                             LayoutType="TextInputLayout"
+                             ValidationMode="PropertyChanged"
+                             CommitMode="PropertyChanged"
+                             MaximumHeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='45'}">
+        </dataForm:SfDataForm>
+
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               FontSize="12"
+               HorizontalOptions="Center"/>
+        <Button Text="Sign Up"
+                Style="{StaticResource CustomButtonStyle}"
+                Command="{Binding ExecuteSignUpCommand}"
+                CommandParameter="{x:Reference signUpForm}"
+                Margin="20"/>
+    </VerticalStackLayout>
+
+</ContentPage>

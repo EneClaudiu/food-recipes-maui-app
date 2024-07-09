@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.WelcomePage"
+             Title="WelcomePage"
+             BackgroundColor="White"
+             Shell.NavBarIsVisible="False"
+             xmlns:viewmodel="clr-namespace:RecipeCabinet.ViewModels"
+             x:DataType="viewmodel:WelcomePageViewModel"
+             xmlns:local="clr-namespace:RecipeCabinet.CustomControls">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:PercentageConverter x:Key="PercentageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <VerticalStackLayout Spacing="25" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="20">
+
+        <Image Source="logo.png" Aspect="AspectFill" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,2,0,0" 
+               MaximumHeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='40'}"/>
+
+        <BoxView HeightRequest="10" BackgroundColor="Transparent" VerticalOptions="Start"/>
+
+        <VerticalStackLayout HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='25'}" Spacing="40" Padding="0">
+            <Button  Command="{Binding SignInCommand}" Style="{StaticResource CustomButtonStyle}" Text="Login" HorizontalOptions="Center" VerticalOptions="Center"/>
+            
+            <Button  Command="{Binding SignUpCommand}" Style="{StaticResource CustomButtonStyle}" Text="Sign Up" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="Center" HeightRequest="20" Margin="0,40,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <BoxView Grid.Column="0" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='35'}"
+                     HeightRequest="1" Color="Gray" HorizontalOptions="End" VerticalOptions="Center" Margin="20,0,0,0"/>
+            <Label Grid.Column="1" Text="or" HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="White" Padding="0 ,0"/>
+            <BoxView Grid.Column="2" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='35'}"
+                     HeightRequest="1" Color="Gray" HorizontalOptions="Start" VerticalOptions="Center" Margin="0,0,20,0"/>
+        </Grid>
+
+        <Button Command="{Binding ContinueAsGuestCommand}" Style="{StaticResource CustomButtonStyle}" WidthRequest="230" Text="Continue as Guest" 
+                HorizontalOptions="Center" VerticalOptions="End"/>
+        
+    </VerticalStackLayout>
+</ContentPage>

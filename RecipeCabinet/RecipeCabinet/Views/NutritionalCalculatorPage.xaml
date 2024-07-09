@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.NutritionalCalculatorPage"
+             Title="Nutritional Calculator"
+             xmlns:viewmodels="clr-namespace:RecipeCabinet.ViewModels"
+             x:DataType="viewmodels:NutritionalCalculatorPageViewModel"
+             xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+            <controls:QuantityUnitConverter x:Key="QuantityUnitConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*">
+        <ScrollView>
+            <VerticalStackLayout Padding="30" Spacing="20">
+                <Label Text="   Try the nutritional calculator and start making healthier choices!" FontSize="Medium" FontAttributes="Bold" />
+                <Label Text="Choose a local recipe: (optional)" FontSize="Medium" FontAttributes="Bold"/>
+                <Picker  Title="Select a recipe" ItemsSource="{Binding MyRecipes}" SelectedItem="{Binding SelectedRecipe}" ItemDisplayBinding="{Binding Name}"/>
+
+                <Label Text="Enter recipe ingredients:" FontSize="Medium" FontAttributes="Bold"/>
+                <Editor Placeholder="Enter one ingredient per line" Text="{Binding Ingredients, Mode=TwoWay}" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='85'}" 
+                        HeightRequest="250" Background="#f5f5f5" IsEnabled="{Binding IsEditorEnabled}"/>
+                <Button Text="Clear" Command="{Binding ClearEditorCommand}" BackgroundColor="Transparent" FontAttributes="Bold" FontFamily="ArialBlack" BorderColor="#ee9644" WidthRequest="90" BorderWidth="1.2" TextColor="#ee9644" HorizontalOptions="End"
+                        FontSize="Small"/>
+
+                <Label Text="{Binding ErrorText}" FontSize="12" FontAttributes="Bold" TextColor="Red" HorizontalOptions="Center" Margin="0,10,0,0"  HeightRequest="20"/>
+                <Button Text="Calculate" Command="{Binding CalculateNutritionCommand}" WidthRequest="180" BackgroundColor="#ee9644" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack" FontSize="17"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <sfPopup:SfPopup IsOpen="{Binding IsResultOpen}" ShowHeader="False" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='90'}" HeightRequest="680" VerticalOptions="Center">
+            <sfPopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <ScrollView>
+                        <VerticalStackLayout BackgroundColor="White">
+                        <Grid x:Name="NutritionalGrid" Padding="25" RowSpacing="10" ColumnSpacing="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Text="Nutrition Facts" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Large" FontFamily="ArialBlack" HorizontalOptions="Center" Margin="0,5,0,10"/>
+
+                                <Label Text="Calories" FontAttributes="Bold" Grid.Row="1" Grid.Column="0" FontSize="Large" FontFamily="ArialBlack"/>
+                                <Label Text="{Binding NutritionalValuesObj.Calories}" FontAttributes="Bold" Grid.Row="1" Grid.Column="2" FontSize="Large" FontFamily="ArialBlack"/>
+
+                                <Label Text="Total Fat" FontAttributes="Bold" Grid.Row="2" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label  Grid.Row="2" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack" HorizontalOptions="Start">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.TotalFat.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.TotalFat.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="2" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.TotalFat.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.TotalFat.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Saturated Fat" Grid.Row="3" Grid.Column="0" FontSize="Medium" Margin="20,0,0,0" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="3" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.SaturatedFat.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.SaturatedFat.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="3" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.SaturatedFat.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.SaturatedFat.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Trans Fat" Grid.Row="4" Grid.Column="0" FontSize="Medium" Margin="20,0,0,0" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="4" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.TransFat.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.TransFat.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Cholesterol" FontAttributes="Bold" Grid.Row="5" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="5" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Cholesterol.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Cholesterol.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="5" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Cholesterol.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Cholesterol.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Sodium" FontAttributes="Bold" Grid.Row="6" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="6" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Sodium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Sodium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="6" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Sodium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Sodium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Total Carbohydrate" FontAttributes="Bold" Grid.Row="7" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="7" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Carbohydrate.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Carbohydrate.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="7" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Carbohydrate.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Carbohydrate.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Dietary Fiber" Grid.Row="8" Grid.Column="0" FontSize="Medium" Margin="20,0,0,0" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="8" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Fiber.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Fiber.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="8" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Fiber.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Fiber.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Total Sugars" Grid.Row="9" Grid.Column="0" FontSize="Medium" Margin="20,0,0,0" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="9" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Sugars.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Sugars.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Protein" FontAttributes="Bold" Grid.Row="10" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="10" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Protein.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Protein.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="10" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Protein.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Protein.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Vitamin D" Grid.Row="11" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="11" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.VitaminD.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.VitaminD.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="11" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.VitaminD.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.VitaminD.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Calcium" Grid.Row="12" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="12" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Calcium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Calcium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="12" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Calcium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Calcium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Iron" Grid.Row="13" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="13" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Iron.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Iron.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="13" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Iron.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Iron.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Text="Potassium" Grid.Row="14" Grid.Column="0" FontSize="Medium" FontFamily="ArialBlack"/>
+                                <Label Grid.Row="14" Grid.Column="1" FontSize="Medium" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Potassium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalNutrients.Potassium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Grid.Row="14" Grid.Column="2" FontSize="Medium" FontAttributes="Bold" FontFamily="ArialBlack">
+                                    <Label.Text>
+                                        <MultiBinding Converter="{StaticResource QuantityUnitConverter}">
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Potassium.Quantity" />
+                                            <Binding Path="NutritionalValuesObj.TotalDaily.Potassium.Unit" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                            </Grid>
+                            <Label Text="% Daily Value*" Grid.Row="15" Grid.Column="2" FontSize="10" FontFamily="ArialBlack" FontAttributes="Bold" HorizontalOptions="End" Margin="0,-20,20,0"/>
+
+                            <Button Text="Close" Command="{Binding CloseResultCommand}" BackgroundColor="Transparent" FontAttributes="Bold" FontFamily="ArialBlack" BorderColor="#ee9644" WidthRequest="140" BorderWidth="1.2" TextColor="#ee9644" Margin="0,30,0,30"/>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </sfPopup:SfPopup.ContentTemplate>
+        </sfPopup:SfPopup>
+    </Grid>
+</ContentPage>

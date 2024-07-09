@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.RecipePage"
+             xmlns:viewmodel="clr-namespace:RecipeCabinet.ViewModels"
+             x:DataType="viewmodel:RecipePageViewModel"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls"
+             Title="Recipe Details"
+             xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <StackLayout Spacing="20">
+            <Frame HasShadow="True" CornerRadius="0" Padding="0" Grid.Row="0" Grid.ColumnSpan="2">
+                <controls:CustomImageControl ImageSrc="{Binding SelectedRecipe.ImageUrl}" Aspect="AspectFill" HeightRequest="220"/>
+            </Frame>
+
+            <Label Text="{Binding SelectedRecipe.Name}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" FontFamily="ArialBlack" VerticalOptions="Center" HorizontalTextAlignment="Center"/>
+
+            <Grid HorizontalOptions="Fill" BackgroundColor="#EDEDED" HeightRequest="110" VerticalOptions="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Source: " FontSize="15" FontAttributes="Bold"/>
+                    <Label Text="{Binding ActualSource}" FontSize="15" FontAttributes="Bold"/>
+                    <Image Source="online.jpg" Background="Transparent" Margin="5,0,0,0">
+                        <Image.Triggers>
+                            <DataTrigger TargetType="Image" Binding="{Binding ActualSource}" Value="Local">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </DataTrigger>
+                        </Image.Triggers>
+                    </Image>
+                </StackLayout>
+
+                <StackLayout Grid.Row="2" Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Orientation="Horizontal">
+                    <Label Text="Rating: " FontSize="15" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedRecipe.Rating, StringFormat='{0:F1} / 5'}" FontSize="15"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Created: " FontSize="15" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedRecipe.DateCreated, StringFormat='{0:dd-MM-yyyy}'}" FontSize="15"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Prep: " FontSize="15" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedRecipe.PrepTime}" FontSize="15" />
+                    <Label Text=" min" FontSize="15" />
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" Grid.Row="3" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Cook: " FontSize="15" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedRecipe.CookTime}" FontSize="15" />
+                    <Label Text=" min" FontSize="15" />
+                </StackLayout>
+            </Grid>
+
+            <StackLayout Padding="20" Spacing="5">
+                <Label Text="Description" FontSize="19" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                <Label Text="{Binding SelectedRecipe.Description}" FontSize="15"/>
+            </StackLayout>
+
+            <StackLayout Padding="20" Spacing="5">
+                <Label Text="Ingredients" FontSize="19" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                <Label Text="{Binding SelectedRecipe.Ingredients}" FontSize="15"/>
+            </StackLayout>
+
+            <StackLayout Padding="20" Spacing="5">
+                <Label Text="Instructions" FontSize="19" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                <Label Text="{Binding SelectedRecipe.Instructions}" FontSize="15"/>
+            </StackLayout>
+
+
+            <sfPopup:SfPopup IsOpen="{Binding IsEditRecipeOpen}" HeaderTitle="Edit the Recipe" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='95'}" HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+                <sfPopup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <ScrollView>
+                            <VerticalStackLayout Spacing="10" Padding="30">
+                                <inputLayout:SfTextInputLayout Hint="Name">
+                                    <Entry Text="{Binding RecipeObject.Name}" HeightRequest="35"/>
+                                </inputLayout:SfTextInputLayout>
+
+                                <inputLayout:SfTextInputLayout Hint="Description">
+                                    <Editor Text="{Binding RecipeObject.Description}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="35"/>
+                                </inputLayout:SfTextInputLayout>
+
+                                <inputLayout:SfTextInputLayout Hint="Ingredients">
+                                    <Editor Text="{Binding RecipeObject.Ingredients}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="70" />
+                                </inputLayout:SfTextInputLayout>
+
+                                <inputLayout:SfTextInputLayout Hint="Instructions">
+                                    <Editor Text="{Binding RecipeObject.Instructions}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="70" />
+                                </inputLayout:SfTextInputLayout>
+
+                                <inputLayout:SfTextInputLayout Hint="Prep Time (minutes)">
+                                    <editors:SfNumericEntry Value="{Binding RecipeObject.PrepTime}"  ShowClearButton="True" IsEditable="True"/>
+                                </inputLayout:SfTextInputLayout>
+
+                                <inputLayout:SfTextInputLayout ContainerType="Outlined" Hint="Cook Time (minutes)">
+                                    <editors:SfNumericEntry Value="{Binding RecipeObject.CookTime}" ShowClearButton="True" IsEditable="True"/>
+                                </inputLayout:SfTextInputLayout>
+
+                                <HorizontalStackLayout Spacing="10" Margin="0,0,0,20">
+                                    <Button Text="Browse Image" Command="{Binding BrowserImageCommand}" BackgroundColor="#915b29" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                                    <controls:CustomImageControl ImageSrc="{Binding ImageSource}" WidthRequest="50" HeightRequest="50"/>
+                                </HorizontalStackLayout>
+
+                                <Button Text="Save" Command="{Binding SaveRecipeCommand}" WidthRequest="180" BackgroundColor="#ee9644" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                                <Button Text="Cancel" Command="{Binding ClosePageCommand}" WidthRequest="140" BackgroundColor="Transparent" BorderColor="#ee9644" TextColor="#ee9644" FontAttributes="Bold" FontFamily="ArialBlack" BorderWidth="1"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </DataTemplate>
+                </sfPopup:SfPopup.ContentTemplate>
+            </sfPopup:SfPopup>
+
+            <sfPopup:SfPopup x:Name="ratingPopup" IsOpen="{Binding IsRatingOpen}" HeaderHeight="0" HeightRequest="500" HorizontalOptions="CenterAndExpand" BackgroundColor="White">
+                <sfPopup:SfPopup.ContentTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Padding="20" HorizontalOptions="Center" Spacing="10" BackgroundColor="White" WidthRequest="350">
+                            <Image Source="recipecritic.jpg" HeightRequest="200"/>
+                            <Label Text="Rate this Recipe:" HorizontalOptions="Center" VerticalOptions="Center" FontSize="Large" FontAttributes="Bold"/>
+                            <editors:SfRating x:Name="recipeRating" ItemCount="5" Precision="Half" Value="{Binding UserRating, Mode=TwoWay}" ItemSize="40" Margin="0,10,0,0">
+                                <editors:SfRating.RatingSettings>
+                                    <editors:RatingSettings UnratedStroke="Black" UnratedStrokeThickness="1.2" RatedFill="#F5A621" RatedStrokeThickness="0.5"/>
+                                </editors:SfRating.RatingSettings>
+                            </editors:SfRating>
+
+                            <Button Text="Submit" WidthRequest="150" BackgroundColor="#ff6054" TextColor="Black" FontAttributes="Bold" Margin="0,60,0,0" Command="{Binding SaveRatingCommand}"/>
+                            <Button Text="Cancel" BackgroundColor="Transparent" TextColor="DimGray" BorderColor="Transparent" Command="{Binding CancelRatingCommand}"/>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </sfPopup:SfPopup.ContentTemplate>
+            </sfPopup:SfPopup>
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.AccountPage"
+             Title="Account"
+             xmlns:viewmodel="clr-namespace:RecipeCabinet.ViewModels"
+             x:DataType="viewmodel:AccountPageViewModel"
+             xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:dataForm="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+            <DataTemplate x:Key="HeaderTemplate">
+                <Grid BackgroundColor="White" Padding="10">
+                    <Label Text="Change Password" FontSize="Large" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Start" VerticalOptions="Center" FontFamily="ArialBlack" Margin="20,0,0,0"/>
+                    <Button Text="✕" BackgroundColor="Transparent" BorderColor="Transparent" TextColor="Black" VerticalOptions="Center" HorizontalOptions="End" FontSize="Large" Padding="0" Margin="0"
+                        Command="{Binding ClosePopupCommand}"/>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout Orientation="Vertical" Padding="30" MaximumHeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='100'}">
+        <Label Text="Username" FontSize="Medium" FontAttributes="Bold" Margin="0,20,0,0"/>
+        <Grid ColumnDefinitions="*, Auto, Auto, Auto" Padding="10">
+            <Entry Grid.Column="0" Placeholder="Username" Text="{Binding Username, Mode=TwoWay}" FontSize="18" IsEnabled="{Binding IsChangeUsernameEnabled}"/>
+            <Button Grid.Column="1" Text="✕" Background="Transparent" Command="{Binding DisableChangeUsernameCommand}" IsVisible="{Binding IsChangeUsernameEnabled}" 
+                    Padding="0" Margin="5,0,5,0" TextColor="Red" FontAttributes="Bold" FontFamily="ArialBlack"/>
+            <Button Grid.Column="2" Text="✓" Background="Transparent" Command="{Binding ChangeUsernameCommand}" IsVisible="{Binding IsChangeUsernameEnabled}" 
+                    Padding="0" Margin="5,0,5,0" TextColor="ForestGreen" FontAttributes="Bold" FontFamily="ArialBlack"/>
+            <ImageButton Source="edit.png" Grid.Column="3" HeightRequest="20" WidthRequest="20" Margin="20,0,0,0" Command="{Binding EnableChangeUsernameCommand}" />
+        </Grid>
+        <Label Text="{Binding ChangeUsernameErrorMessage}" TextColor="Red" FontSize="12"/>
+
+        <Label Text="Email" FontSize="Medium" FontAttributes="Bold"  Margin="0,25,0,0"/>
+        <Entry Margin="10,10,0,0" Placeholder="Email" Text="{Binding Email}" FontSize="18" IsEnabled="False"/>
+
+        <Label Text="Password" FontSize="Medium" FontAttributes="Bold"  Margin="0,40,0,0"/>
+        <Grid ColumnDefinitions="*, Auto" Padding="10">
+            <Entry Grid.Column="0" Placeholder="Password" Text="xxxxxxxxxxxx" IsPassword="True" IsEnabled="False" FontSize="18"/>
+            <ImageButton Command="{Binding OpenChangePasswordCommand}" Source="edit.png" Grid.Column="1" HeightRequest="20" WidthRequest="20" Margin="20,0,0,0"/>
+        </Grid>
+
+        <sfPopup:SfPopup HeaderTemplate="{StaticResource HeaderTemplate}" IsOpen="{Binding IsChangePasswordOpen}" WidthRequest="330" HeightRequest="500" VerticalOptions="Center">
+            <sfPopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="20" Background="White">
+                        <dataForm:SfDataForm x:Name="changePasswordForm"
+                                             DataObject="{Binding ChangePasswordFormModel}"
+                                             LayoutType="TextInputLayout"
+                                             ValidationMode="PropertyChanged"
+                                             CommitMode="PropertyChanged"/>
+                        <Label Text="{Binding ChangePasswordErrorMessage}" TextColor="Red" FontSize="12" HorizontalTextAlignment="Center"/>
+                        <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" CommandParameter="{Binding ChangePasswordFormModel}" WidthRequest="180"
+                                BackgroundColor="#ee9644" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </sfPopup:SfPopup.ContentTemplate>
+        </sfPopup:SfPopup>
+    </StackLayout>
+</ContentPage>

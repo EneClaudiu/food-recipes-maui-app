@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.BrowseRecipesPage"
+             Title="Browse Recipes"
+             xmlns:viewmodel="clr-namespace:RecipeCabinet.ViewModels"
+             xmlns:model="clr-namespace:RecipeCabinet.Models"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls"
+             x:DataType="viewmodel:BrowseRecipesViewModel"
+             Shell.NavBarIsVisible="True"
+             xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:sfSlider="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+
+            <DataTemplate x:Key="HeaderTemplate">
+                <Grid BackgroundColor="White" Padding="10">
+                    <Label Text="Filters" FontSize="Large" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Start" VerticalOptions="Center" FontFamily="ArialBlack" Margin="40,0,0,0"/>
+                    <Button Text="✕" BackgroundColor="Transparent" BorderColor="Transparent" TextColor="Black" VerticalOptions="Center" HorizontalOptions="End" FontSize="Large" Padding="0" Margin="0"
+                            Command="{Binding CloseFilterCommand}"/>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="50, *">
+        <Grid ColumnDefinitions="*, Auto" Padding="10" Grid.Row="0">
+            <SearchBar Grid.Column="0" Placeholder="Search recipes" Text="{Binding SearchQuery, Mode=TwoWay}" SearchCommand="{Binding LoadRecipesCommand}" TextChanged="OnSearchBarTextChanged" TextColor="Black" PlaceholderColor="Black" CancelButtonColor="Black"/>
+            <ImageButton Grid.Column="1" Source="setting.png" WidthRequest="25" Command="{Binding FilterButtonClickedCommand}"/>
+        </Grid>
+        <ScrollView Grid.Row="1">
+            <StackLayout>
+                <Label Text="Error connecting to online services. Please check your connection or try again later." FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center" VerticalOptions="Center" WidthRequest="300" Margin="0,100,0,0" TextColor="DarkGray" IsVisible="{Binding IsErrorVisible}"/>
+                <CollectionView ItemsSource="{Binding OnlineRecipes}" HorizontalOptions="StartAndExpand" SelectionMode="Single" RemainingItemsThresholdReachedCommand="{Binding LoadMoreRecipesCommand}" RemainingItemsThreshold="1">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Recipe">
+                            <Frame WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='95'}" Margin="0,10,0,0">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Path = GotoRecipeDetailsCommand, Source={RelativeSource AncestorType={x:Type viewmodel:BrowseRecipesViewModel}}}" CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+
+                                <HorizontalStackLayout VerticalOptions="CenterAndExpand" Spacing="10">
+                                    <controls:CustomImageControl ImageSrc="{Binding ImageUrl}" WidthRequest="100" HeightRequest="100" HorizontalOptions="StartAndExpand" />
+                                    <VerticalStackLayout WidthRequest="220">
+                                        <Label Text="{Binding Name}" HorizontalOptions="Start" VerticalTextAlignment="Center" FontSize="Large" FontAttributes="Bold" LineBreakMode="TailTruncation" MaxLines="2"/>
+                                        <Label Text="{Binding Description}" HorizontalOptions="FillAndExpand" VerticalTextAlignment="Center" FontSize="Medium" LineBreakMode="TailTruncation" MaxLines="3"/>
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+            </StackLayout>
+        </ScrollView>
+
+        <sfPopup:SfPopup IsOpen="{Binding IsFilterOpen}" HeaderTemplate="{StaticResource HeaderTemplate}" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='90'}" HeightRequest="700" VerticalOptions="Center">
+            <sfPopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="10" Padding="30" Background="White">
+                            <Label Text="Ingredients Filter" FontSize="Medium" FontAttributes="Bold" />
+                            <CollectionView ItemsSource="{Binding FilterIngredients}" MaximumHeightRequest="150">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame Padding="8">
+                                            <Grid ColumnDefinitions="*, Auto" HeightRequest="20" VerticalOptions="Center" Padding="0">
+                                                <Label Grid.Column="0" Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Start" FontSize="14"/>
+                                                <Button Grid.Column="1" Text="✕" BackgroundColor="Transparent" BorderColor="Transparent" TextColor="DarkGray" VerticalOptions="Center" HorizontalOptions="End" FontSize="14" Padding="0" Margin="0"
+                                                        Command="{Binding Path=BindingContext.RemoveIngredientCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}"/>
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Entry Grid.Column="0" Placeholder="Add ingredient" Text="{Binding IngredientQuery}" />
+                                <Button Grid.Column="1" Text="Add" Command="{Binding AddIngredientCommand}" BackgroundColor="Transparent" FontAttributes="Bold" TextColor="Black" FontFamily="ArialBlack"/>
+                            </Grid>
+
+                            <Label Text="Rating Filter" FontSize="Medium" FontAttributes="Bold" Margin="0,20,0,0"/>
+                            <Label Text="Select the minimum amount of starts" FontSize="Small" />
+                            <sfSlider:SfSlider StepSize="0.5" Value="{Binding RatingFilter, Mode=TwoWay}" Minimum="0" Maximum="5" Interval="1" ShowTicks="True" ShowLabels="True" ShowDividers="True" MinorTicksPerInterval="1">
+                                <sfSlider:SfSlider.DividerStyle>
+                                    <sfSlider:SliderDividerStyle ActiveRadius="3" InactiveRadius="3"/>
+                                </sfSlider:SfSlider.DividerStyle>
+                                <sfSlider:SfSlider.MinorTickStyle>
+                                    <sfSlider:SliderTickStyle Offset="6"/>
+                                </sfSlider:SfSlider.MinorTickStyle>
+                                <sfSlider:SfSlider.MajorTickStyle>
+                                    <sfSlider:SliderTickStyle Offset="6"/>
+                                </sfSlider:SfSlider.MajorTickStyle>
+                                <sfSlider:SfSlider.TrackStyle>
+                                    <sfSlider:SliderTrackStyle ActiveFill="#d97e29" InactiveFill="#e3c3a6" />
+                                </sfSlider:SfSlider.TrackStyle>
+                                <sfSlider:SfSlider.ThumbStyle>
+                                    <sfSlider:SliderThumbStyle Fill="#c37022" />
+                                </sfSlider:SfSlider.ThumbStyle>
+                                <sfSlider:SfSlider.ThumbOverlayStyle>
+                                    <sfSlider:SliderThumbOverlayStyle Fill="#f7be88"/>
+                                </sfSlider:SfSlider.ThumbOverlayStyle>
+                            </sfSlider:SfSlider>
+
+                            <Label Text="Cooktime Filter" FontSize="Medium" FontAttributes="Bold" Margin="0,20,0,0"/>
+                            <Label Text="Enter the maximum amount time" FontSize="Small" />
+                            <Entry Placeholder="Minutes" Text="{Binding CookTimeFilter}" Keyboard="Numeric" />
+
+                            <Button Text="Apply" Command="{Binding LoadRecipesCommand}" Margin="0,40,0,0" WidthRequest="180" BackgroundColor="#ee9644" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                            <Button Text="Clear Filters" Command="{Binding ClearFiltersCommand}" BorderWidth="1" Margin="0,10,0,0" WidthRequest="140" BackgroundColor="Transparent" BorderColor="#ee9644" TextColor="#ee9644" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </sfPopup:SfPopup.ContentTemplate>
+        </sfPopup:SfPopup>
+    </Grid>
+</ContentPage>

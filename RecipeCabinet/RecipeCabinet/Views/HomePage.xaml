@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.HomePage"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls"
+             xmlns:viewmodel="clr-namespace:RecipeCabinet.ViewModels"
+             x:DataType="viewmodel:HomePageViewModel"
+             xmlns:model="clr-namespace:RecipeCabinet.Models"
+             Title="My Recipes"
+             Shell.NavBarIsVisible="True"
+             xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Create Recipe" Command="{Binding CreateNewRecipeCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*">
+        <ScrollView Grid.Row="0">
+            <StackLayout>
+                <Label Text="Nothing here? Try creating a new recipe or download one from the Browse tab." FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" VerticalOptions="Center" WidthRequest="300" Margin="0,100,0,0" TextColor="DarkGray" IsVisible="{Binding IsPageEmpty}"/>
+                <CollectionView ItemsSource="{Binding MyRecipes}" HorizontalOptions="StartAndExpand" SelectionMode="Single" Grid.Row="0"
+                        RemainingItemsThreshold="2" RemainingItemsThresholdReachedCommand="{Binding LoadMoreRecipesCommand}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Recipe">
+                            <Frame WidthRequest = "{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='95'}" Margin="0,5,0,0">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Path = GotoRecipeDetailsCommand, Source={RelativeSource AncestorType={x:Type viewmodel:HomePageViewModel}}}" CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+
+                                <HorizontalStackLayout VerticalOptions="CenterAndExpand" Spacing="10">
+                                    <controls:CustomImageControl ImageSrc="{Binding ImageUrl}" WidthRequest="100" HeightRequest="100" HorizontalOptions="StartAndExpand" />
+                                    <VerticalStackLayout WidthRequest="220">
+                                        <Label Text="{Binding Name}" MaxLines="2" HorizontalOptions="Start" VerticalTextAlignment="Center" FontSize="Large" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Description}" HorizontalOptions="FillAndExpand" VerticalTextAlignment="Center" FontSize="Medium" LineBreakMode="TailTruncation" MaxLines="3"/>
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+            </StackLayout>
+        </ScrollView>
+
+        <sfPopup:SfPopup IsOpen="{Binding IsCreateRecipeOpen}" HeaderTitle="Create new Recipe" WidthRequest="{Binding Width, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='95'}" HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+            <sfPopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="10" Padding="30">
+                            <inputLayout:SfTextInputLayout Hint="Name">
+                                <Entry Text="{Binding NewRecipe.Name}" HeightRequest="35"/>
+                            </inputLayout:SfTextInputLayout>
+
+                            <inputLayout:SfTextInputLayout Hint="Description">
+                                <Editor Text="{Binding NewRecipe.Description}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="35"/>
+                            </inputLayout:SfTextInputLayout>
+
+                            <inputLayout:SfTextInputLayout Hint="Ingredients">
+                                <Editor Text="{Binding NewRecipe.Ingredients}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="70"/>
+                            </inputLayout:SfTextInputLayout>
+
+                            <inputLayout:SfTextInputLayout Hint="Instructions">
+                                <Editor Text="{Binding NewRecipe.Instructions}" VerticalOptions="FillAndExpand" AutoSize="TextChanges" MinimumHeightRequest="70" />
+                            </inputLayout:SfTextInputLayout>
+
+                            <inputLayout:SfTextInputLayout Hint="Prep Time (minutes)">
+                                <editors:SfNumericEntry Value="{Binding NewRecipe.PrepTime}"  ShowClearButton="True" IsEditable="True"/>
+                            </inputLayout:SfTextInputLayout>
+
+                            <inputLayout:SfTextInputLayout ContainerType="Outlined" Hint="Cook Time (minutes)">
+                                <editors:SfNumericEntry Value="{Binding NewRecipe.CookTime}" ShowClearButton="True" IsEditable="True"/>
+                            </inputLayout:SfTextInputLayout>
+
+                            <HorizontalStackLayout Spacing="10" Margin="0,0,0,20">
+                                <Button Text="Browse Image" Command="{Binding BrowserImageCommand}" BackgroundColor="#915b29" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                                <controls:CustomImageControl ImageSrc="{Binding ImageSource}" WidthRequest="50" HeightRequest="50"/>
+                            </HorizontalStackLayout>
+
+                            <Button Text="Save" Command="{Binding SaveRecipeCommand}" WidthRequest="180" BackgroundColor="#ee9644" TextColor="White" FontAttributes="Bold" FontFamily="ArialBlack"/>
+                            <Button Text="Cancel" Command="{Binding ClosePageCommand}" WidthRequest="140" BackgroundColor="Transparent" BorderColor="#ee9644" TextColor="#ee9644" FontAttributes="Bold" FontFamily="ArialBlack" BorderWidth="1"/>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </sfPopup:SfPopup.ContentTemplate>
+        </sfPopup:SfPopup>
+        
+    </Grid>
+</ContentPage>

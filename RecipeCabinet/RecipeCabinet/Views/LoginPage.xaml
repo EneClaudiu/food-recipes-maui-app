@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipeCabinet.Views.LoginPage"
+             xmlns:dataForm="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+             xmlns:behaviour="clr-namespace:RecipeCabinet.Behaviors"
+             Title="LoginPage"
+             Shell.NavBarIsVisible="False"
+             xmlns:controls="clr-namespace:RecipeCabinet.CustomControls">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <controls:PercentageConverter x:Key="PercentageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <behaviour:LoginFormBehavior/>
+    </ContentPage.Behaviors>
+
+    <VerticalStackLayout Spacing="20" Padding="20">
+        <Border Grid.ColumnSpan="{OnIdiom Default=2, Desktop=1}" Stroke="Transparent" Background="{OnIdiom Phone=Transparent,Desktop=Transparent}" Grid.RowSpan="{OnIdiom Default=1, Desktop=2}">
+            <Image Source="logo.png" Grid.Row="0" Grid.Column="0" HorizontalOptions="Center" Aspect="AspectFit" 
+                   MaximumHeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type ContentPage}}, Converter={StaticResource PercentageConverter}, ConverterParameter='30'}"/>
+        </Border>
+
+        <dataForm:SfDataForm x:Name="loginForm" 
+                     DataObject="{Binding LoginFormModel}"
+                     LayoutType="TextInputLayout"
+                     ValidationMode="PropertyChanged"
+                     CommitMode="PropertyChanged"
+                     x:FieldModifier="public"/>
+
+        <Grid ColumnDefinitions="0.5*,0.5*" Grid.Row="2" Padding="12,0,0,0" VerticalOptions="Start">
+            <HorizontalStackLayout VerticalOptions="Center" Padding="10,0,0,0" >
+                <CheckBox x:Name="RememberMeCheckBox" Color="{StaticResource Primary}" IsChecked="{Binding IsRememberMeChecked, Mode=TwoWay}"/>
+                <Label  Text="Remember me" FontSize="12" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               FontSize="12"
+               HorizontalOptions="Center"/>
+        <Button Text="LOGIN"
+                x:Name="loginButton"
+                Style="{StaticResource CustomButtonStyle}"
+                Command="{Binding ExecuteLoginCommand}"
+                CommandParameter="{x:Reference Name=loginForm}">
+        </Button>
+
+        <Label HorizontalOptions="Center" HorizontalTextAlignment="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Don't have an account?   " />
+                    <Span Text="Sign Up" TextDecorations="Underline" TextColor="Blue">
+                        <Span.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ExecuteSignUpCommand}"/>
+                        </Span.GestureRecognizers>
+                    </Span>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+    </VerticalStackLayout>
+
+</ContentPage>
