@@ -62,3 +62,7 @@ repo
    Run the API first, then the MAUI app.
 
    `Note: Depending on the system configurations, the first API call may take longer than expected.`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
